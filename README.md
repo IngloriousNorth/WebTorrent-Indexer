@@ -6,6 +6,8 @@ My site is propagate.info, meant for public domain, educational Ebooks, Audioboo
 
 Fully built in and plug-in play is a Quantum Random Neo4J Recommendation Engine. There is also graph visualization (with VR-toggle), which coheres with an Advanced Search feature, so that users can search by title, author, class, publisher, source type, media, format, and resolution.
 
+The point is that different translations (editions) or formats are shown under the same "Source" heading, so torrents corresponding to the same token media are not scattered around the site. So a Librivox recording and a PDF of the same book are located in the same place, organized by translator edition. 
+
 # GETTING STARTED
 
 The server is express/node.js, and the Database is Neo4j; downloads are to work using WebTorrent in the Browser. The Library renders a paginated JQuery DataTable and a ForceGraphVR to the client (under the advanced search-condition). I have developed an in-house client-side SPA-router called TEMPLAR, which routes using #anchors and uriParams, as a lightweight alternative to AngularJS. You will find the TEMPLAR router on my GitHub page.
