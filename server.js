@@ -658,7 +658,6 @@ query += "WITH s, e, t, count " +
       return res.json({recordsTotal: recordsTotal, recordsFiltered: recordsFiltered, records: data.records});
     })
 })
-
 app.post("/graph_search", 
     check("all").trim().escape().isLength({max:100}), 
     check("title").trim().escape().isLength({max: 400}),
@@ -699,9 +698,6 @@ app.post("/graph_search",
         let sAuthor = escapeLucene(author);
         let sPublisher = escapeLucene(publisher);
 
-        // Force AND logic unless explicitly set to "false"
-        const isOrSearch = req.body.all === "false";
-
         const hasActiveSearch = (sTitle && sTitle !== "\\-") || 
                                 (sAuthor && sAuthor !== "\\-") || 
                                 (sPublisher && sPublisher !== "\\-") || 
@@ -715,9 +711,52 @@ app.post("/graph_search",
         let query = "";
 
         // --- 1. SEARCH SEED MATCHING ---
-        if (!isOrSearch) {
-            // AND LOGIC (DEFAULT): Incrementally narrow down 's'
-            query += "MATCH (s:Source)-[:PUB_AS]->(:Edition)-[:DIST_AS]->(t:Torrent) WHERE t.deleted = false ";
+      
+        // OR LOGIC (DEFAULT): Execute subqueries with UNION to match ANY provided parameters
+        if (hasActiveSearch) {
+            let branches = [];
+
+            if (sTitle && sTitle !== "\\-") {
+                branches.push(`
+                    CALL db.index.fulltext.queryNodes('source_name', $title) YIELD node AS titleSource
+                    WHERE titleSource:Source
+                    RETURN titleSource AS s
+                `);
+            }
+
+            if (sAuthor && sAuthor !== "\\-") {
+                branches.push(`
+                    CALL db.index.fulltext.queryNodes('authorSearch', $author) YIELD node AS aNode
+                    MATCH (aNode)-[:AUTHOR]->(authorSource:Source)
+                    RETURN authorSource AS s
+                `);
+            }
+
+            if (sPublisher && sPublisher !== "\\-") {
+                branches.push(`
+                    CALL db.index.fulltext.queryNodes('publisherName', $publisher) YIELD node AS pNode
+                    MATCH (pNode)<-[:PUBLISHED_BY]-(:Edition)<-[:PUB_AS]-(pubSource:Source)
+                    RETURN pubSource AS s
+                `);
+            }
+
+            if (classes.length > 0) {
+                branches.push(`
+                    MATCH (cNode:Class)-[:TAGS]->(classSource:Source)
+                    WHERE cNode.name IN $classes
+                    RETURN classSource AS s
+                `);
+            }
+
+            if (branches.length === 0) {
+                branches.push(`
+                    MATCH (s:Source)
+                    RETURN s
+                `);
+            }
+
+            query += "CALL { " + branches.join(" UNION ") + " } ";
+            query += "MATCH (s)-[:PUB_AS]->(:Edition)-[:DIST_AS]->(t:Torrent) WHERE t.deleted = false ";
 
             if (req.body.media !== "all" && req.body.media) query += "AND t.media = $media ";
             if (req.body.format !== "all" && req.body.format) query += "AND t.format = $format ";
@@ -725,90 +764,11 @@ app.post("/graph_search",
             if (req.body.type && req.body.type !== "all") query += "AND s.type = $type ";
 
             query += "WITH DISTINCT s ";
-
-            if (sTitle && sTitle !== "\\-") {
-                query += "CALL db.index.fulltext.queryNodes('source_name', $title) YIELD node AS titleNode " +
-                         "WHERE titleNode = s " +
-                         "WITH DISTINCT s ";
-            }
-
-            if (sAuthor && sAuthor !== "\\-") {
-                query += "MATCH (s)<-[:AUTHOR]-(a_matched:Author) " +
-                         "CALL db.index.fulltext.queryNodes('authorSearch', $author) YIELD node AS a_node " +
-                         "WHERE a_matched = a_node " +
-                         "WITH DISTINCT s ";
-            }
-
-            if (sPublisher && sPublisher !== "\\-") {
-                query += "MATCH (s)-[:PUB_AS]->(:Edition)-[:PUBLISHED_BY]->(p_matched:Publisher) " +
-                         "CALL db.index.fulltext.queryNodes('publisherName', $publisher) YIELD node AS p_node " +
-                         "WHERE p_matched = p_node " +
-                         "WITH DISTINCT s ";
-            }
-
-            if (classes.length > 0) {
-                query += "MATCH (c:Class)-[:TAGS]->(s) WHERE c.name IN $classes " +
-                         "WITH s, count(DISTINCT c) AS cCount WHERE cCount = " + classes.length + " " +
-                         "WITH DISTINCT s ";
-            }
         } else {
-            // OR LOGIC: Only executes if req.body.all === "false" explicitly
-            if (hasActiveSearch) {
-                let branches = [];
-
-                if (sTitle && sTitle !== "\\-") {
-                    branches.push(`
-                        CALL db.index.fulltext.queryNodes('source_name', $title) YIELD node AS titleSource
-                        WHERE titleSource:Source
-                        RETURN titleSource AS s
-                    `);
-                }
-
-                if (sAuthor && sAuthor !== "\\-") {
-                    branches.push(`
-                        CALL db.index.fulltext.queryNodes('authorSearch', $author) YIELD node AS aNode
-                        MATCH (aNode)-[:AUTHOR]->(authorSource:Source)
-                        RETURN authorSource AS s
-                    `);
-                }
-
-                if (sPublisher && sPublisher !== "\\-") {
-                    branches.push(`
-                        CALL db.index.fulltext.queryNodes('publisherName', $publisher) YIELD node AS pNode
-                        MATCH (pNode)<-[:PUBLISHED_BY]-(:Edition)<-[:PUB_AS]-(pubSource:Source)
-                        RETURN pubSource AS s
-                    `);
-                }
-
-                if (classes.length > 0) {
-                    branches.push(`
-                        MATCH (cNode:Class)-[:TAGS]->(classSource:Source)
-                        WHERE cNode.name IN $classes
-                        RETURN classSource AS s
-                    `);
-                }
-
-                if (branches.length === 0) {
-                    branches.push(`
-                        MATCH (s:Source)
-                        RETURN s
-                    `);
-                }
-
-                query += "CALL { " + branches.join(" UNION ") + " } ";
-                query += "MATCH (s)-[:PUB_AS]->(:Edition)-[:DIST_AS]->(t:Torrent) WHERE t.deleted = false ";
-
-                if (req.body.media !== "all" && req.body.media) query += "AND t.media = $media ";
-                if (req.body.format !== "all" && req.body.format) query += "AND t.format = $format ";
-                if (req.body.res !== "all" && req.body.res) query += "AND t.res = $res ";
-                if (req.body.type && req.body.type !== "all") query += "AND s.type = $type ";
-
-                query += "WITH DISTINCT s ";
-            } else {
-                query += "MATCH (s:Source)-[:PUB_AS]->(:Edition)-[:DIST_AS]->(t:Torrent) WHERE t.deleted = false " +
-                         "WITH DISTINCT s ";
-            }
+            query += "MATCH (s:Source)-[:PUB_AS]->(:Edition)-[:DIST_AS]->(t:Torrent) WHERE t.deleted = false " +
+                     "WITH DISTINCT s ";
         }
+    
 
         // --- 2. DATA HYDRATION & NEIGHBORHOOD TRAVERSAL ---
         query += `
