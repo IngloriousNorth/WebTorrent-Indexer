@@ -6,7 +6,7 @@ function traverseGraph(set, searchable){
                     searchable +
                     "&author=" +                    
                     "&classes=" +                    
-                    "&all=false" +                    
+                    "&all=true" +                    
                     "&publisher=" +
                     "&type=all" +
                     "&media=all" +                   
@@ -20,7 +20,7 @@ function traverseGraph(set, searchable){
                       "&title=" +                         
                         "&author=" + searchable +                        
                         "&classes=" +                        
-                        "&all=false" +                        
+                        "&all=true" +                        
                         "&publisher=" +
                         "&type=all" +
                         "&media=all" +                   
@@ -34,7 +34,7 @@ function traverseGraph(set, searchable){
                       "&title=" +                         
                         "&author=" +                         
                         "&classes=" + JSON.stringify(searchable) +               
-                        "&all=false" +                        
+                        "&all=true" +                        
                         "&publisher=" +
                         "&type=all" +
                         "&media=all" +                   
@@ -48,7 +48,7 @@ function traverseGraph(set, searchable){
                       "&title=" +                         
                         "&author=" +                      
                         "&classes=" +                        
-                        "&all=false" +                        
+                        "&all=true" +                        
                         "&publisher=" + searchable +  
                         "&type=all" +
                         "&media=all" +                   

@@ -335,7 +335,7 @@ function assertAdvButton(){
           ? JSON.stringify(encodeURIComponent($("#adv_classes").val()))
           : "") +
         "&all=" +
-        $("#adv_all").prop("checked") +
+        "true" +
         "&publisher=" +
         encodeURIComponent($("#adv_publisher").val()) +
         "&type=" +
@@ -355,7 +355,7 @@ function assertTr(record, edition_torrent, apaHtml){
   if(edition_torrent.torrent){
     const cleanApa = apaHtml.replace(/<[^>]*>?/gm, '');
      var tr = "<tr>";
-      tr += "<td>" + edition_torrent.torrent.properties.format + "<br>" + edition_torrent.torrent.properties.media + "<br>" + ( edition_torrent.torrent.properties.res !== "N/A" ? edition_torrent.torrent.properties.res : "" )+ "</td>";          
+      tr += "<td>" + edition_torrent.torrent.properties.media + "<br>" + edition_torrent.torrent.properties.format + "<br>" + ( edition_torrent.torrent.properties.res !== "N/A" ? edition_torrent.torrent.properties.res : "" )+ "</td>";          
       
      /*   tr +=
         "<td class='here'>" +
