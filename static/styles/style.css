@@ -199,7 +199,7 @@ footer{
 }
 
 #numPeers, #uploadSpeed, #downloadSpeed{
-  color:#007BFF !important;
+  color:#50C777 !important;
 }
 
 footer a:link, #hero a:visited {
@@ -598,7 +598,7 @@ input{
 body .ui-menu-item {
   /* font-family to all */
  /* box-shadow:4px 4px 5px #83DAC0;*/
-  background-color:midnightblue;
+  background-color:#007BFF;
   text-align:justify;
   font-size:16px;
   padding:7px 0px 7px 0px;
@@ -996,8 +996,8 @@ h2 a:hover{
 
 h1 a, h1 a:visited{
   font-size:32px;
-   color:black;
-   text-shadow:3px 2px white;
+   color:white;
+   text-shadow:3px 2px #50C777;
   position:fixed;
   text-decoration:none;
   top:0px;
@@ -1141,10 +1141,10 @@ h2 span a{
 }
 
 .sourceType{
-  color:black !important;
-  text-shadow:1px 1px gold;
-  font-size:19px !important;
-  font-family:"Rationale" !important;
+  color:white !important;
+  text-shadow:1px 2px #50C777;
+  font-size:23px !important;
+  font-family:"Pirata One" !important;
   text-align:center !important;
   font-variant:small-caps;
   width:98px;
@@ -1167,13 +1167,20 @@ h2 span a{
     color:midnightblue !important; /* Adjust text color for readability */
 }
 
-
+.TEMPLAR .mission{
+  font-family:"Share Tech Mono", serif;
+  text-align:justify;
+  padding-left:5px;
+  padding-right:5px;
+}
 
 h3{
-  font-size:21px;
-  font-family:"Share Tech Mono", serif;
+  font-size:24px;
+  font-family:"Pirata One", serif;
   text-align:center;
   width:100%;
+  color:white;
+  text-shadow:1px 2px #50C777;
 }
 
 .torrentsTable th{
@@ -1721,7 +1728,7 @@ div.upload{
 
  h1, h1 a, h1 a :visited{
     position:relative;
-    top:3px;
+    top:4px;
     left:0px;
     text-align:center;
   }
@@ -1796,7 +1803,8 @@ div.upload{
 #pyr{
   height:49px;
   position:fixed;
-  left:-5px;
+  right:0px;
+  left:auto;
   top:2px;
 }
  
@@ -2065,9 +2073,7 @@ div.TEMPLAR.webtorrent{
     font-size:32px;
   }
 
-  h3{
-    font-size:16px;
-  }
+  
   
   #hero{
     font-size:16px;
