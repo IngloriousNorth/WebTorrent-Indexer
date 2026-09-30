@@ -640,38 +640,11 @@ function htmlUpload(){
     }*/
 		$("#up_submit").prop("disabled", true)
 		$("body").css("cursor", "progress");
-		// In resetUpload() add defaults:
-		uploadModel.torrent.link_address = "";
-		uploadModel.torrent.is_paid = false;
-
-		// In initializeUpload() / htmlUpload() event listeners:
-		$("#link_address").change(function(){
-		    uploadModel.torrent.link_address = $(this).val().trim();
-		});
-
-		$("#is_paid").change(function(){
-		    uploadModel.torrent.is_paid = $(this).is(":checked");
-		});
-
-		// In $("#up_submit").click handler:
-		$.post("/upload/" + uploadModel.uuid, {
-		    size: uploadModel.torrent.size, 
-		    APA : apa, 
-		    type: uploadModel.type, 
-		    edition_pages : uploadModel.edition.edition_pages, 
-		    edition_publisher : uploadModel.edition.edition_publisher,
-		    date: uploadModel.date, 
-		    title : uploadModel.title, 
-		    authors : JSON.stringify(uploadModel.authors), 
-		    torrent : JSON.stringify(uploadModel.torrent), 
-		    edition_date : $("#edition_date").val(), 
-		    edition_uuid : uploadModel.edition.edition_uuid, 
-		    edition_title : uploadModel.edition.edition_title, 
-		    edition_no : uploadModel.edition.edition_no, 
-		    classes : JSON.stringify(uploadModel.classes),
-		    link_address: uploadModel.torrent.link_address,
-		    is_paid: uploadModel.torrent.is_paid
-		}, function(data) { ... });
+		$.post("/upload/" + uploadModel.uuid, {size: uploadModel.torrent.size, APA : apa, type: uploadModel.type, edition_pages : uploadModel.edition.edition_pages, edition_publisher : uploadModel.edition.edition_publisher,
+		 date: uploadModel.date, title : uploadModel.title, authors : JSON.stringify(uploadModel.authors), torrent : JSON.stringify(uploadModel.torrent), 
+			edition_date : $("#edition_date").val(), edition_uuid : uploadModel.edition.edition_uuid, 
+			edition_title : uploadModel.edition.edition_title, edition_no : uploadModel.edition.edition_no, classes : JSON.stringify(uploadModel.classes)},
+			 function(data){
 			 	$("body").css("cursor", "default");
 			if(data.errors && data.errors.length > 0){
 				console.log(data.errors)

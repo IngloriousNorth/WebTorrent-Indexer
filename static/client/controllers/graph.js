@@ -204,9 +204,25 @@ function handleNormalClick(clickedNode){
         const d = clickedNode;
         const routeMap = { "Source": "source", "Author": "author", "Class": "class", "Publisher": "publisher", "Find Source" : "source", "Find Author" : "author", "Find Class" : "class", "Find Publisher" : "publisher" };
         const label = routeMap[d.group] || d.group.toLowerCase();
+        exitFullscreenIfActive()
         TEMPLAR.route(`#node?label=${label}&uuid=${d.id}`);        
     }
 }
+
+function exitFullscreenIfActive() {
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari / Older Chrome */
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
+    }
+}
+
 function setupMobileFullscreen(Graph) {
     const container = document.querySelector(".graph_search");
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
