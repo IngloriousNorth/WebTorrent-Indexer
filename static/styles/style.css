@@ -996,13 +996,13 @@ h2 a:hover{
 
 h1 a, h1 a:visited{
   font-size:32px;
-   color:white;
-   text-shadow:3px 2px #50C777;
+   color:silver;
+   text-shadow:1px 1px #50C777;
   position:fixed;
   text-decoration:none;
   top:0px;
   letter-spacing:2px;
-  left:31px;
+  left:5px;
   font-family:"Pirata One", system-ui !important;
 
 }
@@ -1010,7 +1010,7 @@ h1 a, h1 a:visited{
 #pyr{
   height:88px;
   position:fixed;
-  left:-7px;
+  left:-5px;
   top:1px;
 }
 
@@ -1141,10 +1141,10 @@ h2 span a{
 }
 
 .sourceType{
-  color:white !important;
-  text-shadow:1px 2px #50C777;
-  font-size:23px !important;
-  font-family:"Pirata One" !important;
+  color:black !important;
+  text-shadow:1px 2px gold;
+  font-size:18px !important;
+  font-family:"Rationale", serif !important;
   text-align:center !important;
   font-variant:small-caps;
   width:98px;
@@ -1179,7 +1179,7 @@ h3{
   font-family:"Pirata One", serif;
   text-align:center;
   width:100%;
-  color:white;
+  color:silver;
   text-shadow:1px 2px #50C777;
 }
 
@@ -1340,7 +1340,7 @@ footer{
   border-top-left-radius:8px;
   border-top-right-radius:8px;
   padding-top:12px;
-  border:2px dotted goldenrod;
+  border:2px dotted mediumvioletred;
 }
 
 
@@ -1397,7 +1397,7 @@ h3{
 
 
 header{
-  box-shadow:3px 3px 5px goldenrod;
+  box-shadow:3px 3px 5px #50C777;
   background:#007BFF;
   border-bottom:3px solid black;
 }
@@ -1415,7 +1415,7 @@ header{
   position:relative;
   z-index:5;
   padding-bottom:13px;
-  font-family:"Rationale", system-ui !important;
+  font-family:"Pirata One", system-ui !important;
 
 }
 
@@ -1448,7 +1448,7 @@ table.dataTable tr.dtrg-group th{
 }
 
 div.TEMPLAR{
-  background-color:dimgray;
+  background-color:#CDCDCD;
 }
 
 .torrentsTable thead th{
@@ -1481,11 +1481,11 @@ div.TEMPLAR{
 }
 
 .adv_search{
-  background:#CDCDCD;
+  background:dimgray;
   color:palegoldenrod !important;
   margin-bottom:35px;
   box-shadow:2px 2px 2px black;
-  border:2px solid goldenrod !important;
+  border:2px solid #50C777 !important;
 }
 
 .adv_search label{
@@ -1509,11 +1509,12 @@ div.TEMPLAR{
 
 
 #adv_heading{
-  color:white;
+  color:silver;
   font-size:25px !important;
   text-decoration:none;
-  text-shadow:2px 3px black;
+  text-shadow:2px 2px #50C777;
   letter-spacing:0px;
+  font-family:"Pirata One", serif !important;
 }
 
 .torrentsTable a{
@@ -1588,12 +1589,12 @@ canvas:-webkit-full-screen {
 }
 
 #graph_search, #adv_submit, .upload button{
-  border:2px solid black;
+  border:2px solid #007BFF;
   background:goldenrod;
-  box-shadow:2px 2px 3px gold !important;
+  box-shadow:2px 2px 3px black !important;
   color:#007BFF;
   font-family:"Share Tech Mono", system-ui;
-  font-size:16px;
+  font-size:20px;
   width:101px;
   margin-bottom:16px;
   font-variant:small-caps;
@@ -1609,7 +1610,7 @@ canvas:-webkit-full-screen {
   box-shadow:3px 4px 3px skyblue;  
   font-weight:bold;
   border:3px solid palegoldenrod;
-  color:lightgoldenrodyellow;
+  color:#50C777;
 }
 
 #warp{
@@ -1652,7 +1653,7 @@ h2 span a{
 
 footer{
   border-top:2px solid black;
-  box-shadow:2px -2px 4px goldenrod;
+  box-shadow:2px -2px 4px #50C777;
   position:fixed;
   z-index:9998;
   background-color:dimgray !important;
@@ -1734,7 +1735,7 @@ div.upload{
   }
   
   h1 a, h1 a:visited{
-    left:8px;
+    left:5px;
   }
 
 
