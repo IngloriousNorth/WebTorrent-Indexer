@@ -1,7 +1,7 @@
 const config = {
         defaultPage: "torrents",
         dir: "client/partials",
-        fade: false,
+        fade: true,
         pages: ["mission", "webtorrent", "torrents", "top10", "node", "set", "upload", "privacy"],
         helm: [
             {

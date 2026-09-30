@@ -95,7 +95,7 @@ function initializeTorrents(table) {
                 title: TEMPLAR.paramREC() ? TEMPLAR.paramREC().title : "",
                 author: TEMPLAR.paramREC() ? TEMPLAR.paramREC().author : "",
                 classes: TEMPLAR.paramREC() ? TEMPLAR.paramREC().classes : "",
-                all: TEMPLAR.paramREC() ? TEMPLAR.paramREC().all : "",
+                all: "true",
                 publisher: TEMPLAR.paramREC() ? TEMPLAR.paramREC().publisher : "",
                 type: TEMPLAR.paramREC() ? TEMPLAR.paramREC().type : "",
                 media: TEMPLAR.paramREC() ? TEMPLAR.paramREC().media : "",
@@ -158,37 +158,20 @@ function initializeTorrents(table) {
                     
                     var numPeers = 0;
                     record._fields[2].forEach(function(edition_torrent) {
-                        /* This is where the torrent table (with WebTorrent Download) <th> header is set. */
-                        /*
-
-                        if (edition_torrent.torrent) {
-                            // Image selection logic based on type
-                            
-                            if (edition_torrent.edition) {                    
-                                const currentApa = assertAPACitation(record, edition_torrent);
-                                torrentsTable += assertTr(record, edition_torrent, currentApa);
-
-                                if (editionsAdded.indexOf(edition_torrent.edition.properties.uuid) === -1) {
-                                    assertFirstEditionRow(record, edition_torrent, editionsAdded, assertAPACitation(record, edition_torrent), sourceIMG, dateField, authorField, classesField, torrentsTable);
-                                } else {
-                                    assertExistingEditionRow(record, edition_torrent, editionsAdded, torrentsTable)
-                                }
-                            }
-                        }*/
-                        // Inside record._fields[2].forEach:
-                        var torrentsTableRows = ""; // Store only <tr> elements here
                         var currentApa = assertAPACitation(record, edition_torrent);
-                        torrentsTableRows += assertTr(record, edition_torrent, currentApa);
+                        
+                        // 1. Generate ONLY the single <tr> for THIS specific torrent
+                        var singleTrRow = assertTr(record, edition_torrent, currentApa);
 
                         if (editionsAdded.indexOf(edition_torrent.edition.properties.uuid) === -1) {
-                            // NEW EDITION: Create the full table wrapper
+                            // NEW EDITION: Create the full table wrapper with just this first row
                             var fullTable = "<table class='torrentsTable'><thead><tr><th>File</th><th>Download</th><th>Revs</th><th>Size</th></tr></thead><tbody>" + 
-                                            torrentsTableRows + "</tbody></table>";
+                                            singleTrRow + "</tbody></table>";
                             
                             assertFirstEditionRow(record, edition_torrent, editionsAdded, currentApa, sourceIMG, dateField, authorField, classesField, fullTable);
                         } else {
-                            // EXISTING EDITION: Only append the <tr> to the existing <tbody>
-                            assertExistingEditionRow(edition_torrent, editionsAdded, torrentsTableRows);
+                            // EXISTING EDITION: Append ONLY this single <tr> to the table
+                            assertExistingEditionRow(edition_torrent, editionsAdded, singleTrRow);
                         }
                     });
                 });
@@ -317,10 +300,10 @@ function initializeTorrents(table) {
     //called on webtorrent route load, either refresh or a.webtorrent route()
         if ($existing.length === 0){
             $(this).text("[Queued..!]");
-            $(this).css('color', '#50C777');
+            $(this).css('color', '#007BFF');
         }
         else{
-            $(this).text("Already Added.");
+            $(this).text("[Already Queued.]");
             $(this).css('color', 'orange');
         }
         var that = $(this);

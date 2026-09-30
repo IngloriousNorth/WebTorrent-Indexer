@@ -139,7 +139,7 @@ function initializeUpload(){
 					$("#edition_select option").each(function(){
 					})
 
-					$("#edition_select").change(function(){
+					/*$("#edition_select").change(function(){
 						if($("#edition_select").val() !== "new"){
 							var pos = $("#edition_select").prop('selectedIndex') - 1;
 
@@ -147,11 +147,11 @@ function initializeUpload(){
 							uploadModel.editions[pos].uuid = data.record._fields[4][pos].uuid;
 							uploadModel.edition.edition_uuid = data.record._fields[4][pos].uuid;
 
-							$("#edition_title").val(uploadModel.editions[pos].title).trigger("change");
-							$("#edition_no").val(uploadModel.editions[pos].no).trigger("change");
-							$("#edition_date").val(uploadModel.editions[pos].date).trigger("change");
-							$("#edition_publisher").val(uploadModel.editions[pos].publisher).trigger("change");
-							$("#edition_pages").val(uploadModel.editions[pos].pages).trigger("change");
+							$("#edition_title").val(decodeEntities(uploadModel.editions[pos].title || "")).trigger("change");
+							$("#edition_no").val(decodeEntities(uploadModel.editions[pos].no || "")).trigger("change");
+							$("#edition_date").val(decodeEntities(uploadModel.editions[pos].date || "")).trigger("change");
+							$("#edition_publisher").val(decodeEntities(uploadModel.editions[pos].publisher || "")).trigger("change");
+							$("#edition_pages").val(decodeEntities(uploadModel.editions[pos].pages || "")).trigger("change");
 							uploadModel.editions[pos].title = data.record._fields[4][pos].title;
 							uploadModel.editions[pos].no = data.record._fields[4][pos].no
 							uploadModel.editions[pos].date = data.record._fields[4][pos].date 
@@ -160,11 +160,61 @@ function initializeUpload(){
 
 						}
 						else{
-							uploadModel.edition.edition_uuid = null;
+							uploadModel.edition.edition_uuid = "";
 							
 						}
 
-					})
+					})*/
+					$("#edition_select").change(function () {
+					  var selectedVal = $(this).val();
+
+					  if (selectedVal !== "new") {
+					    var pos = $("#edition_select").prop("selectedIndex") - 1;
+					    var targetEdition = data.record._fields[4][pos];
+
+					    // Lock edition UUID to existing node
+					    uploadModel.edition.edition_uuid = targetEdition.uuid;
+
+					    // Populate inputs and sync uploadModel
+					    $("#edition_title")
+					      .val(decodeEntities(targetEdition.title || ""))
+					      .trigger("change");
+					    $("#edition_no")
+					      .val(decodeEntities(targetEdition.no || ""))
+					      .trigger("change");
+					    $("#edition_date")
+					      .val(decodeEntities(targetEdition.date || ""))
+					      .trigger("change");
+					    $("#edition_publisher")
+					      .val(decodeEntities(targetEdition.publisher || ""))
+					      .trigger("change");
+					    $("#edition_pages")
+					      .val(decodeEntities(targetEdition.pages || ""))
+					      .trigger("change");
+
+					    $("#newEdition").hide();
+					  } else {
+					    // RESET model for a NEW edition
+					    uploadModel.edition = {
+					      edition_uuid: null, // Use null instead of string "null"
+					      edition_title: "",
+					      edition_no: "",
+					      edition_date: "",
+					      edition_publisher: "",
+					      edition_pages: "",
+					      edition_img: "",
+					    };
+
+					    // Clear input fields
+					    $("#edition_title").val("").trigger("change");
+					    $("#edition_no").val("").trigger("change");
+					    $("#edition_date").val("").trigger("change");
+					    $("#edition_publisher").val("").trigger("change");
+					    $("#edition_pages").val("").trigger("change");
+
+					    $("#newEdition").show();
+					  }
+					});
 
 
 					$("#edition_publisher").change(function(){
@@ -424,33 +474,6 @@ function htmlUpload(){
 
 	})
 
-	/*$("input:file").change(function(){
-		function renameFile(originalFile, newName) {
-		    return new File([originalFile], newName, {
-		        type: originalFile.type,
-		        lastModified: originalFile.lastModified,
-		    });
-		}
-
-
-
-		
-		var files = this.files; 
-		
-			seed(files, function(err, torrent){
-
-				//alert("Please download the torrent file and seed in BiglyBT with the WebTorrent plugin. Other torrent clients do not support WebTorrent seeding to the Browser. ****WEBTORRENT DESKTOP IS CURRENTLY BROKEN, SO DO NOT USE IT****")
-				$(".torrentArea").empty();
-				uploadModel.torrent.length = torrent.length;
-				uploadModel.torrent.infoHash = torrent.infoHash;
-				uploadModel.torrent.torrentFileBlobURL = torrent.torrentFileBlobURL;
-				uploadModel.torrent.media = $("#media").val();
-				uploadModel.torrent.format = $("#format").val();
-				$(".torrentArea").append('<a href="' + torrent.torrentFileBlobURL + '" target="_blank" download="' + torrent.name + '.torrent">[Torrent]</a>')
-            $(".torrentArea").append('&nbsp;<a href="magnet:?xt=urn:btih:' + torrent.infoHash + "&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337");     		
-		
-	})*/
-
     $('input:file').change(function() {
     // Reference the underlying HTMLInputElement
 	    var fileList = this.files;
@@ -617,11 +640,38 @@ function htmlUpload(){
     }*/
 		$("#up_submit").prop("disabled", true)
 		$("body").css("cursor", "progress");
-		$.post("/upload/" + uploadModel.uuid, {size: uploadModel.torrent.size, APA : apa, type: uploadModel.type, edition_pages : uploadModel.edition.edition_pages, edition_publisher : uploadModel.edition.edition_publisher,
-		 date: uploadModel.date, title : uploadModel.title, authors : JSON.stringify(uploadModel.authors), torrent : JSON.stringify(uploadModel.torrent), 
-			edition_date : $("#edition_date").val(), edition_uuid : uploadModel.edition.edition_uuid, 
-			edition_title : uploadModel.edition.edition_title, edition_no : uploadModel.edition.edition_no, classes : JSON.stringify(uploadModel.classes)},
-			 function(data){
+		// In resetUpload() add defaults:
+		uploadModel.torrent.link_address = "";
+		uploadModel.torrent.is_paid = false;
+
+		// In initializeUpload() / htmlUpload() event listeners:
+		$("#link_address").change(function(){
+		    uploadModel.torrent.link_address = $(this).val().trim();
+		});
+
+		$("#is_paid").change(function(){
+		    uploadModel.torrent.is_paid = $(this).is(":checked");
+		});
+
+		// In $("#up_submit").click handler:
+		$.post("/upload/" + uploadModel.uuid, {
+		    size: uploadModel.torrent.size, 
+		    APA : apa, 
+		    type: uploadModel.type, 
+		    edition_pages : uploadModel.edition.edition_pages, 
+		    edition_publisher : uploadModel.edition.edition_publisher,
+		    date: uploadModel.date, 
+		    title : uploadModel.title, 
+		    authors : JSON.stringify(uploadModel.authors), 
+		    torrent : JSON.stringify(uploadModel.torrent), 
+		    edition_date : $("#edition_date").val(), 
+		    edition_uuid : uploadModel.edition.edition_uuid, 
+		    edition_title : uploadModel.edition.edition_title, 
+		    edition_no : uploadModel.edition.edition_no, 
+		    classes : JSON.stringify(uploadModel.classes),
+		    link_address: uploadModel.torrent.link_address,
+		    is_paid: uploadModel.torrent.is_paid
+		}, function(data) { ... });
 			 	$("body").css("cursor", "default");
 			if(data.errors && data.errors.length > 0){
 				console.log(data.errors)
@@ -664,7 +714,7 @@ function resetUpload(){
 	edition_publisher : "",
 	edition_no : "",
 	edition_pages : "",
-	edition_uuid : "null"
+	edition_uuid : null
 	};
 
 	uploadModel.editions = [];
